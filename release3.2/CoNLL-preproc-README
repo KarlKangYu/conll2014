@@ -1,0 +1,224 @@
+====================================================
+
+CoNLL-2014 Shared Task: Grammatical Error Correction
+
+Description of Preprocessed NUCLE Data Set
+
+7 April 2014  Version 3.2
+====================================================
+
+
+1. General
+==========
+
+This README file describes a preprocessed version of the NUS Corpus of
+Learner English (NUCLE). For information about NUCLE, please refer to
+the NUCLE README file.  For information about the CoNLL-2014 shared
+task, please refer to the shared task website.
+
+The preprocessed data set, following earlier CoNLL shared tasks,
+provides syntactic information for the raw texts in NUCLE.  For each
+sentence, the part of speech tags, dependency parse tree, and
+constituent parse tree are encoded in a column format.
+
+In NUCLE, annotations are made at the character level, which means
+both the start offset and the end offset of an error annotation are
+character positions in the corresponding paragraph.  In this
+preprocessed version, annotations are made at the token level, which
+means the start offset and the end offset are indexes of tokens in the
+corresponding sentence.
+
+This README is updated on 4 August 2014.
+
+
+2. Files
+========
+
+Two files are to be generated:
+
+  conll14st-preprocessed.conll
+  conll14st-preprocessed.conll.ann
+
+conll14st-preprocessed.conll contains the preprocessed data in
+CoNLL-style column format. This file is not included in this
+distribution due to the size.
+
+conll14st-preprocessed.conll.ann contains token-level annotations.
+
+
+3. Preprocessing systems
+========================
+
+The NUCLE corpus is preprocessed with the following steps to generate
+this preprocessed data set:
+
+  a). sentence splitting, using nltk punkt [1].
+      Note: the version used to generate the files is before the fixing
+            of issue 514
+  b). word tokenization, using nltk word_tokenize [1].
+  c). POS tags, dependency parse trees, and constituent parse trees,
+      using the Stanford parser [2].
+  d). projecting character-level annotation to token-level annotation.
+
+Results from (a-c) are in conll14st-preprocessed.conll. The projected
+annotations (d) are included in conll14st-preprocessed.conll.ann.
+
+
+4. Data format
+==============
+
+Here is an example sentence in conll14st-preprocessed.conll:
+
+	NID	PID	SID TOKENID	TOKEN	POS	DPHEAD	DPREL	SYNT
+
+	829     1       2       0       This    DT      1       det     (ROOT(S(NP*
+	829     1       2       1       will    NN      7       nsubj   *)
+	829     1       2       2       ,       ,       -       -       *
+	829     1       2       3       if      IN      4       mark    (SBAR*
+	829     1       2       4       not     RB      7       dep     (FRAG*
+	829     1       2       5       already RB      4       dep     (ADVP*)))
+	829     1       2       6       ,       ,       -       -       *
+	829     1       2       7       caused  VBD     -1      root    (VP*
+	829     1       2       8       problems        NNS     7       dobj    (NP*)
+	829     1       2       9       as      IN      11      mark    (SBAR*
+	829     1       2       10      there   EX      11      expl    (S(NP*)
+	829     1       2       11      are     VBP     7       advcl   (VP*
+	829     1       2       12      very    RB      13      advmod  (NP(NP(ADJP*
+	829     1       2       13      limited VBN     14      amod    *)
+	829     1       2       14      spaces  NNS     11      nsubj   *)
+	829     1       2       15      for     IN      14      prep    (PP*
+	829     1       2       16      us      PRP     15      pobj    (NP*)))))))
+	829     1       2       17      .       .       -       -       *))
+
+
+The columns represent the following:
+
+	Column	Type		Description
+
+	0	NID		Document id of the sentence, equals to "nid" in NUCLE.
+	1	PID		Paragraph index of the sentence, according to the paragraphing in NUCLE (<p></p>).
+	2	SID		Sentence index in paragraph, each sentence has its own index starting from 0.
+	3	TOKENID		Token index in the sentence, starting from 0.
+	4	TOKEN		Word/token.
+	5	POS		Part of speech tag.
+	6	DPHEAD		Index of parent in dependency tree.
+	7	DPREL		Dependency relation with parent.
+	8	SYNT		Constituent tree. The constituent tree can be recovered as follows:
+				(a) Replacing "*" in this column with a string "(pos word)",
+				    where pos is the value of column 5, word is the value of column 4.  
+				(b) Concatenating all the strings in (a) gives 
+				    the bracketing structure of the constituent parse tree. 
+
+------------------------------------------------------------------------
+
+Here is the corresponding token-level annotation for the above
+sentence (in conll14st-preprocessed.conll.ann):
+
+	<ANNOTATION>
+	<MISTAKE nid="829" pid="1" sid="2" start_token="7" end_token="8">
+	<TYPE>Vform</TYPE>
+	<CORRECTION>cause</CORRECTION>
+	</MISTAKE>
+	<MISTAKE nid="829" pid="1" sid="2" start_token="14" end_token="15">
+	<TYPE>Nn</TYPE>
+	<CORRECTION>space</CORRECTION>
+	</MISTAKE>
+	<MISTAKE nid="829" pid="1" sid="2" start_token="11" end_token="12">
+	<TYPE>SVA</TYPE>
+	<CORRECTION>is</CORRECTION>
+	</MISTAKE>
+	</ANNOTATION>
+
+The tags represent the following:
+	
+	Tag			Description
+
+	<ANNOTATION>		Each <ANNOTATION></ANNOTATION> section identifies annotations for one sentence.
+
+	<MISTAKE>		Identifies an error annotation, with the following attributes:
+				nid:  Document id of the sentence, equals to the NID column (column 0) in .conll file
+				pid:  Paragraph index of the sentence, equals to the PID column in .conll file
+				sid:  Sentence index in paragraph, equals to the SID column in .conll file
+				start_token: The token index (TOKENID column in .conll file) which is the start of annotation. 
+				end_token:  The token index which is the end of the annotation. 
+
+	<TYPE>			Error tag (refer to the NUCLE corpus README file for the complete list of error tags).
+
+	<CORRECTION>		Correction, replacing tokens in the interval [start_token, end_token) with the 
+                                correction string will result in a corrected sentence.
+
+------------------------------------------------------------------------
+
+How to map a sentence to its annotation?
+
+In conll14st-preprocessed.conll, different sentences are separated by
+empty lines, and <ANNOTATION></ANNOTATION> sections are also separated
+by empty lines in conll14st-preprocessed.conll.ann.  A sentence maps
+to one <ANNOTATION></ANNOTATION> section, with the same nid, pid, and
+sid.  If a sentence has no annotation, there is no
+<ANNOTATION></ANNOTATION> section for it.  The order of the
+<ANNOTATION></ANNOTATION> sections is the same as the order of
+sentences in the preprocesed file.
+
+
+5. Updates included in version 2.1
+==================================
+
+The error categories Wcip and Rloc have been mapped to Prep, Wci,
+ArtOrDet, and Rloc-, to facilitate the detection and correction of
+preposition errors and article/determiner errors. See the NUCLE README
+file for details on how the mapping was done.
+
+50 overlapping error annotations involving the 5 error tags ArtOrDet,
+Prep, Nn, Vform, and SVA have been modified such that they do not
+overlap in the revised error annotations.
+
+Some minor mistakes in error annotations have been corrected.
+
+This was done for the CoNLL-2013 Shared Task.
+
+
+6. Updates included in version 3.0
+==================================
+
+The overlapping error annotations of the remaining error tags have
+been modified such that they do not overlap in the revised error
+annotations.
+
+Some minor mistakes in error annotations have been corrected.
+
+
+7. Updates included in version 3.1
+==================================
+
+Duplicate error annotations, each having the same span and correction
+string but different error type, are removed to keep only one of
+those.
+
+Previously, annotations spanning to the end of the paragraph was
+detected as cross-sentence and therefore not included in the
+preprocessed format. This has been fixed such that they are included
+in the preprocessed format.
+
+Some minor mistakes in error annotations have been corrected.
+
+
+8. Updates included in version 3.2
+==================================
+
+The preprocessing script has been fixed such that gold edits that
+insert empty string are not included in the token-level gold edit and
+scorer answer files.
+
+
+9. References
+=============
+
+[1] Steven Bird, Ewan Klein, and Edward Loper. 2009. Natural Language
+Processing with Python. O'Reilly Media Inc. http://nltk.org/
+
+[2] Dan Klein and Christopher D. Manning. 2003. Accurate Unlexicalized
+Parsing.  Proceedings of the 41st Annual Meeting of the Association for
+Computational Linguistics, pp. 423-430.  
+Stanford parser version 2.0.1.
+http://nlp.stanford.edu/software/stanford-parser-2012-03-09.tgz

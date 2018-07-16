@@ -1,0 +1,258 @@
+NUCLE Release 3.2
+22 Apr 2014
+
+This README file describes the NUS Corpus of Learner English (NUCLE).
+It was collected in a collaboration project between the National
+University of Singapore (NUS) Natural Language Processing (NLP) Group
+led by Prof. Hwee Tou Ng and the NUS Centre for English Language
+Communication (CELC) led by Prof. Siew Mei Wu. The work was carried
+out as part of the PhD thesis research of Daniel Dahlmeier at the NUS
+NLP Group.
+
+The corpus is distributed under the standard NUS licensing agreement
+available when downloading the corpus. Any questions regarding NUCLE
+should be directed to Hwee Tou Ng at: nght@comp.nus.edu.sg
+
+If you are using the NUCLE corpus in your work, please include a
+citation of the following paper:
+
+Daniel Dahlmeier, Hwee Tou Ng, and Siew Mei Wu (2013). Building a
+Large Annotated Corpus of Learner English: The NUS Corpus of Learner
+English. Proceedings of the Eighth Workshop on Innovative Use of NLP
+for Building Educational Applications (BEA 2013). (pp. 22 --
+31). Atlanta, Georgia, USA.
+
+As supplementary material, this release also comes with the CoNLL-2013
+Shared Task test data with all error types included. This is located
+under the conll13st-test-data/ directory.
+
+
+1. About
+========
+
+NUCLE is a corpus of learner English. It consists of about 1,400
+essays written by university students at the National University of
+Singapore on a wide range of topics, such as environmental pollution,
+healthcare, etc. It contains over one million words which are
+completely annotated with error categories and corrections. All
+annotations have been performed by professional English instructors at
+the NUS CELC.
+
+
+2. Data Format 
+==============
+
+The corpus is distributed in a simple SGML format.  All annotations
+come in a "stand-off" format. The start position and end position of
+an annotation are given by paragraph and character offsets.
+Paragraphs are enclosed in <P>...</P> tags. Paragraphs and characters
+are counted starting from zero. Each annotation includes the following
+fields: the error category, the correction, and optionally a
+comment. If the correction replaces the original text at the given
+location, it should fix the grammatical error.
+
+Example:
+
+<DOC nid="840">
+<TEXT>
+<P>
+Engineering design process can be defined as a process ...
+</P>
+<P>
+Firstly, engineering design ...
+</P>
+...
+</TEXT>
+<ANNOTATION teacher_id="173">
+<MISTAKE start_par="0" start_off="0" end_par="0" end_off="26">
+<TYPE>ArtOrDet</TYPE>
+<CORRECTION>The engineering design process</CORRECTION>
+</MISTAKE>
+...
+</ANNOTATION>
+</DOC>
+<DOC nid="862">
+...
+
+
+Below is a complete list of the error categories in NUCLE release 2.0:
+
+ERROR TAG    ERROR CATEGORY
+---------------------------
+Vt	     Verb tense
+Vm	     Verb modal
+V0	     Missing verb
+Vform	     Verb form
+SVA	     Subject-verb-agreement
+ArtOrDet     Article or Determiner
+Nn	     Noun number
+Npos	     Noun possesive
+Pform	     Pronoun form
+Pref	     Pronoun reference
+Wcip	     Wrong collocation/idiom/preposition
+Wa	     Acronyms
+Wform	     Word form
+Wtone	     Tone
+Srun	     Runons, comma splice
+Smod	     Dangling modifier
+Spar	     Parallelism
+Sfrag	     Fragment
+Ssub	     Subordinate clause
+WOinc	     Incorrect sentence form
+WOadv	     Adverb/adjective position
+Trans	     Link word/phrases
+Mec	     Punctuation, capitalization, spelling, typos
+Rloc	     Local redundancy
+Cit	     Citation
+Others	     Other errors
+Um	     Unclear meaning (cannot be corrected)
+
+
+3. Updates included in version 2.1
+==================================
+
+The major change made in version 2.1 is to map the error categories
+Wcip and Rloc to Prep, Wci, ArtOrDet, and Rloc-.
+
+In the original NUCLE corpus, there is not an explicit preposition
+error category. Instead, preposition errors are part of the Wcip
+(Wrong collocation/idiom/preposition) and Rloc (local redundancy)
+error categories. In addition, redundant article or determiner errors
+are part of the Rloc error category.
+
+To facilitate the detection and correction of preposition errors and
+article/determiner errors, we perform mapping of error categories in
+the original NUCLE corpus. The mapping relies on POS tags, constituent
+parse trees, and error annotations at the token level.
+
+(a) Conditions to change from the error category Wcip or Rloc to Prep:
+
+This applies to replacing a preposition by another preposition, or
+deleting a preposition. The string to be replaced is one word w with
+POS tag IN or TO, the parent of w is a PP in the constituent parse
+tree, and the replacement is either a preposition or the empty string.
+
+(b) Conditions to change from the error category Wcip to Prep:
+
+This applies to inserting a preposition. The replacement is a
+preposition (one word only) and the immediately following word is
+tagged as VBG or is the first word of a noun phrase (NP).
+
+(c) Conditions to change from the error category Rloc to ArtOrDet:
+
+The single word has POS tag DT and the replacement is the empty
+string.
+
+The remaining unaffected "Wcip" errors are assigned the new error
+category "Wci" and the remaining unaffected "Rloc" errors are assigned
+the new error category "Rloc-".
+
+List of 36 Prepositions:
+
+about along among around as at beside besides between by down during
+except for from in inside into of off on onto outside over through to
+toward towards under underneath until up upon with within without
+
+Below is a complete list of 28 error categories in NUCLE release 2.1:
+
+ERROR TAG    ERROR CATEGORY
+---------------------------
+Vt	     Verb tense
+Vm	     Verb modal
+V0	     Missing verb
+Vform	     Verb form
+SVA	     Subject-verb-agreement
+ArtOrDet     Article or Determiner
+Nn	     Noun number
+Npos	     Noun possesive
+Pform	     Pronoun form
+Pref	     Pronoun reference
+Prep         Preposition
+Wci	     Wrong collocation/idiom
+Wa	     Acronyms
+Wform	     Word form
+Wtone	     Tone
+Srun	     Runons, comma splice
+Smod	     Dangling modifier
+Spar	     Parallelism
+Sfrag	     Fragment
+Ssub	     Subordinate clause
+WOinc	     Incorrect sentence form
+WOadv	     Adverb/adjective position
+Trans	     Link word/phrases
+Mec	     Punctuation, capitalization, spelling, typos
+Rloc-	     Local redundancy
+Cit	     Citation
+Others	     Other errors
+Um	     Unclear meaning (cannot be corrected)
+
+
+3. Updates included in version 2.2
+==================================
+
+- Fixed the bug on expanding an error annotation involving part of a
+token to the full token.
+
+- Other miscellaneous corrections were made.
+
+
+4. Updates included in version 2.3
+==================================
+
+- Fixed the bug involving tokenization of punctuation symbols in the
+correction string.
+
+- Fixed the tokenization example in the README file of the M^2 scorer
+to reflect the real tokenization to be used and removed irrelevant
+codes from the scorer package.
+
+
+5. Updates included in version 3.0
+==================================
+
+- Resolved overlapping annotations in the NUCLE corpus to make them
+  non-overlapping.
+
+- Corrected some minor mistakes in error annotations.
+
+
+6. Updates included in version 3.1
+==================================
+
+- Removed duplicate annotations in the NUCLE corpus with the same span
+  and correction string but different error type so as to keep only one of
+  those annotations. This fix only affects 0.1% of all annotations.
+
+- Fixed end-of-paragraph annotations so that the end offset of such
+  annotations is the last character position in the paragraph. This fix
+  only affects 0.7% of all annotations.
+
+- Corrected some minor mistakes in error annotations.
+
+- Inclusion of the CoNLL-2013 test data, with all the known problems
+  described above fixed. Participating teams in the CoNLL-2014 shared
+  task can make use of the CoNLL-2013 test data in training and
+  developing their systems if they wish to do so.
+
+- Fixed a minor bug in the M2 scorer that caused duplicate insertion
+  edits to receive high scores.
+
+
+7. Updates included in version 3.2
+==================================
+
+- Fixed the preprocessing script such that a gold edit that inserts an
+  empty string is not included in the token-level gold edit and scorer
+  answer files.
+
+- Removed one edit that inserted an empty string from the CoNLL-2014
+  test data. Also removed such instances from the NUCLE training data.
+
+- Fixed a bug in the M2 scorer arising from scoring against gold edits
+  from multiple annotators. Specifically, the bug sometimes caused
+  incorrect scores to be reported when scoring against the gold edits
+  of subsequent annotators (other than the first annotator).
+
+- Fixed a bug in the M2 scorer that caused erroneous scores to be
+  reported when dealing with insertion edits followed by deletion edits
+  (or vice versa).
